@@ -4,8 +4,599 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <script src="./jscolor.min.js"></script>
+    <style>
+
+        :root {
+            font-size: 10px;
+        }
+        @media screen and (max-width: 768px) {
+            :root {
+                font-size: 5px;
+            }
+        }
+        
+        *{margin: 0; padding: 0;}
+        html,body,.container{width: 100%; height: 100%;}
+        .optionWrap{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 80px;
+            border: 1px solid #ddd;
+            box-sizing: border-box;
+        }
+        .optionWrap button{
+            flex: 1;
+            height: 100%;
+            border: 0;
+            border-right: 1px solid #ddd;
+            background: #fff;
+            cursor: pointer;
+            font-size: 2.5rem;
+        }
+        .optionWrap button:last-child{
+            border-right: 0;
+        }
+        .calendarWrap{
+            display: flex;
+            flex-direction: column;
+            height: calc(100% - 80px);
+        }
+        .calendarWrap .dayView,
+        .calendarWrap .week{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 80px;
+            border: 1px solid #ddd;
+            border-top: 0;
+            box-sizing: border-box;
+        }
+        .calendarWrap .dayView{
+            flex: 1;
+        }
+        .calendarWrap .drawArea{
+            display: flex;
+            flex-direction: column;
+            flex: 14;
+        }
+        .calendarWrap .week{
+            flex: 1;
+        }
+        .calendarWrap .dayView > div,
+        .calendarWrap .week > div{
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            height: 100%;
+            border: 0;
+            border-right: 1px solid #ddd;
+            background: #fff;
+            cursor: pointer;
+            font-size: 2.5rem;
+        }
+        .calendarWrap .week > div::after{
+            content: attr(data-date);
+            position: absolute;
+            top: 0.5rem;
+            left: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 3rem;
+            height: 3rem;
+            text-align: center;
+        }
+        .calendarWrap .week > div{
+            flex-wrap: wrap;
+            justify-content: unset;
+            align-content: flex-start;
+            gap: 0.5rem;
+            padding: 4rem 1.7rem 0.5rem 1.7rem;
+            box-sizing: border-box;
+        }
+        .calendarWrap .week > div .item{
+            width: 1rem;
+            height: 1rem;
+            border-radius: 100%;
+            background-color: #000;
+            box-shadow: 0px 0px 4px -1px #000;
+        }
+        .calendarWrap .week > div.nextDate{color: #ddd;}
+        .calendarWrap .week > div.prevDate{color: #ddd;}
+    </style>
 </head>
 <body>
-    test123
+    <div class="container">
+        <div class="optionWrap">
+            <button class="yearButton"></button>
+            <button class="monthButton"></button>
+            <button class="prevButton" onclick="moveMonth(this)">이전</button>
+            <button class="nextButton" onclick="moveMonth(this)">다음</button>
+            <button onclick="addTagModalOpen()">태그목록</button>
+            <button>태그별<br />통계</button>
+        </div>
+        <div class="calendarWrap">
+            <div class="dayView">
+                <div>일</div>
+                <div>월</div>
+                <div>화</div>
+                <div>수</div>
+                <div>목</div>
+                <div>금</div>
+                <div>토</div>
+            </div>
+            <div class="drawArea">
+                
+            </div>
+        </div>
+        <style>
+            .addTagPopup{
+                display: none;
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: #fff;
+                padding: 1.5rem;
+                box-sizing: border-box;
+            }
+            .addTagPopup.active{
+                display: block;
+            }
+            .addTagPopup .titleWrap{
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+            .addTagPopup .titleWrap h3{
+                font-size: 4rem;
+                text-align: center;
+            }
+            .addTagPopup .titleWrap button{
+                width: 10rem;
+                height: 4rem;
+                font-size: 2rem;
+            }
+            .addTagPopup ul{}
+            .addTagPopup ul li{
+                list-style: none;
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
+                margin-bottom: 1rem;
+            }
+            .addTagPopup ul li div{
+                width: 4rem;
+                height: 4rem;
+                margin-right: 1rem;
+                box-shadow: 0px 0px 3px -1px #000;
+            }
+            .addTagPopup ul li h4{
+                font-size: 2rem;
+            }
+            .addTagPopup .addTagInfoWrap{
+                display: none;
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.1);
+            }
+            .addTagPopup .addTagInfoWrap.active{
+                display: flex;
+            }
+            .addTagPopup .addTagInfoWrap .addTagInfo{
+                
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 100%;
+                max-width: 500px;
+                padding: 20px;
+                background: #fff;
+                box-sizing: border-box;
+            }
+            .addTagPopup .addTagInfoWrap .addTagInfo .inputWrap{
+                display: flex;
+            }
+            .addTagPopup .addTagInfoWrap .addTagInfo .inputWrap .textInput{
+                width: calc(100% - 110px);
+                height: 30px; border: 1px solid #ddd;
+            }
+            .addTagPopup .addTagInfoWrap .addTagInfo .buttonWrap{
+                display: flex;
+                justify-content: center;
+                margin-top: 10px;
+            }
+            .addTagPopup .addTagInfoWrap .addTagInfo .buttonWrap button{
+                width: 100px;
+                height: 30px;
+                font-size: 2rem;
+            }
+        </style>
+        <div class="addTagPopup">
+            <div class="titleWrap">
+                <h3>태그 리스트</h3>
+                <div>
+                    <button onclick="addTagOpen()">추가</button>
+                    <button onclick="addTagModalOpen()">닫기</button>
+                </div>
+            </div>
+            <ul></ul>
+            <div class="addTagInfoWrap">
+                <div class="addTagInfo">
+                    <div class="inputWrap">
+                        <input class="colorInput" value="#fff" data-jscolor="{}" style="width: 66px; height: 30px; border: 1px solid #ddd;">
+                        <input class="textInput" type="text">
+                    </div>
+                    <div class="buttonWrap">
+                        <button onclick="addTagOpen()">취소</button>
+                        <button onclick="addTag()">추가</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <style>
+            .tagSelectWrap{
+                display: none;
+                top: 148px;
+                left: 177px;
+                position: absolute;
+                background: #fff;
+                box-shadow: 0px 0px 25px -15px #000;
+                padding: 15px;
+                width: calc((100% - 14px) / 7);
+                box-sizing: border-box;
+            }
+            .tagSelectWrap.active{
+                display: block;
+            }
+            .tagSelectWrap::before{
+                content: "";
+                position: absolute;
+                top: -10px;
+                left: 50%;
+                transform: translateX(-50%);
+                border-left: 10px solid transparent;
+                border-right: 10px solid transparent;
+                border-bottom: 10px solid #fff;
+            }
+            .tagSelectWrap::after{
+                content: "";
+                position: absolute;
+                top: -11px;
+                left: 50%;
+                transform: translateX(-50%);
+                border-left: 11px solid transparent;
+                border-right: 11px solid transparent;
+                border-bottom: 11px solid #000;
+            }
+            .tagSelectWrap .tagSelect{
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+            .tagSelectWrap .tagSelect .titleWrap{
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                flex-direction: column;
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            .tagSelectWrap .tagSelect .titleWrap h3{
+                width: 50px;
+                font-size: 2rem;
+            }
+            .tagSelectWrap .tagSelect .titleWrap button{
+                width: 50px;
+                font-size: 1.5rem;
+            }
+            .tagSelectWrap .tagSelect .tagList{
+                width: 100%;
+            }
+            .tagSelectWrap .tagSelect .tagList select{
+                width: 100%;
+                height: 30px;
+                font-size: 1.5rem;
+            }
+            .tagSelectWrap .tagSelect > button{
+                width: 50px;
+                font-size: 1.5rem;
+            }
+
+        </style>
+        <div class="tagSelectWrap">
+            <div class="tagSelect">
+                <div class="titleWrap">
+                    <h3>태그 선택</h3>
+                    <button onclick="tagSelectClose()">닫기</button>
+                </div>
+                <div class="tagList">
+                    <select></select>
+                </div>
+                <button onclick="saveDateObj()">저장</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        let tagObj = {};
+        let dataObj = {};
+        let tagId = 0;
+        function addTagModalOpen()
+        {
+            const addTagPopup = document.querySelector(".addTagPopup");
+            addTagPopup.classList.toggle("active");
+            resetTagList();
+        }
+        function addTagOpen()
+        {
+            const addTagInfoWrap = document.querySelector(".addTagInfoWrap");
+            addTagInfoWrap.classList.toggle("active");
+        }
+        function addTag()
+        {
+            const addTagPopup = document.querySelector(".addTagPopup ul");
+            const li = document.createElement("li");
+            const colorInput = document.querySelector(".colorInput");
+            const textInput = document.querySelector(".textInput");
+            tagObj[`tagId${tagId}`] = {};
+            tagObj[`tagId${tagId}`].color = colorInput.value;
+            tagObj[`tagId${tagId}`].text = textInput.value;
+            li.id = `tagId${tagId}`;
+            li.innerHTML = `<div style="background-color: ${colorInput.value};"></div><h4>${textInput.value}</h4>`;
+            addTagPopup.appendChild(li)
+            tagId++;
+            saveData();
+            addTagOpen();
+        }
+
+        function resetTagList()
+        {
+            const addTagPopup = document.querySelector(".addTagPopup ul");
+            addTagPopup.innerHTML = "";
+            let tagKeys = Object.keys(tagObj);
+            tagKeys.forEach((item)=>{
+                const li = document.createElement("li");
+                li.id = item;
+                li.innerHTML = `<div style="background-color: ${tagObj[item].color};"></div><h4>${tagObj[item].text}</h4>`;
+                addTagPopup.appendChild(li)
+            })
+        }
+
+        function saveData()
+        {
+            localStorage.setItem('tagObj', JSON.stringify(tagObj));
+            localStorage.setItem('dataObj', JSON.stringify(dataObj));
+            localStorage.setItem('tagId', tagId);
+        }
+    </script>
+    <script>
+        let checkDate = null;
+        window.onload = function()
+        {
+            if(localStorage.getItem('tagObj'))
+            {
+                tagObj = JSON.parse(localStorage.getItem('tagObj'));
+            }
+            if(localStorage.getItem('dataObj'))
+            {
+                dataObj = JSON.parse(localStorage.getItem('dataObj'));
+            }
+            if(localStorage.getItem('tagId'))
+            {
+                tagId = parseInt(localStorage.getItem('tagId'));
+            }
+            drawCalendar();
+        }
+
+        function drawCalendar(year,month)
+        {
+            const today = year&&month?new Date(year,month-1,1):new Date();
+            const yearButton = document.querySelector(".yearButton");
+            const monthButton = document.querySelector(".monthButton");
+            const prevButton = document.querySelector(".prevButton");
+            const nextButton = document.querySelector(".nextButton");
+
+            const dayList = intercalation(today.getFullYear()) ? [31,29,31,30,31,30,31,31,30,31,30,31] : [31,28,31,30,31,30,31,31,30,31,30,31];
+            const todayMonthCalendar = new Date(today.getFullYear(), today.getMonth(), 1);
+            
+            const totalDate = dayList[todayMonthCalendar.getMonth()];
+            const prevTotalDate = dayList[todayMonthCalendar.getMonth() - 1 < 0?11:todayMonthCalendar.getMonth() - 1];
+            const startDay = todayMonthCalendar.getDay();
+
+            const monthData = loadData(year?year:today.getFullYear(),month?month:today.getMonth()+1);
+            //=================================================
+            yearButton.textContent = year&&month?year : todayMonthCalendar.getFullYear();
+            monthButton.textContent = year&&month?month : todayMonthCalendar.getMonth()+1;
+            prevButton.setAttribute("data-year",todayMonthCalendar.getMonth()===0?todayMonthCalendar.getFullYear() - 1:todayMonthCalendar.getFullYear());
+            prevButton.setAttribute("data-month",todayMonthCalendar.getMonth()===0?12:todayMonthCalendar.getMonth());
+            nextButton.setAttribute("data-year",todayMonthCalendar.getMonth()===11?todayMonthCalendar.getFullYear() + 1:todayMonthCalendar.getFullYear());
+            nextButton.setAttribute("data-month",todayMonthCalendar.getMonth()===11?1:todayMonthCalendar.getMonth()+2);
+            //=================================================
+
+            const drawArea = document.querySelector(".drawArea");
+            drawArea.innerHTML = "";
+
+            let prevStartDate = 0;
+            if(startDay != 0)
+            {
+                prevStartDate = prevTotalDate - startDay;
+            }
+            let startCount = 0;
+            let plusCount = 0;
+
+            for(let i = 0; i < 6; i++)
+            {
+                const week = document.createElement("div");
+                week.classList.add("week");
+                week.classList.add(`week${i+1}`);
+                for(let j = 0; j < 7; j++)
+                {
+                    const date = document.createElement("div");
+                    if(prevStartDate === prevTotalDate || prevStartDate === 0)
+                    {
+                        if(totalDate===startCount)
+                        {
+                            date.classList.add("nextDate");
+                            date.setAttribute("data-date",plusCount + 1);
+                            plusCount++
+                        }
+                        else
+                        {
+                            if(monthData)
+                            {
+                                if(monthData[startCount + 1]?.length)
+                                {
+                                    monthData[startCount + 1].forEach((item)=>{
+                                        const tag = document.createElement("div");
+                                        tag.classList.add("item");
+                                        tag.style.backgroundColor = colorCheck(item).color;
+                                        date.appendChild(tag);
+                                    })
+                                }
+                            }
+                            date.setAttribute("data-date",startCount + 1);
+                            date.setAttribute("onclick","tagSelectOpen(this)");
+                            startCount++;
+                        }
+                    }
+                    else
+                    {
+                        date.classList.add("prevDate");
+                        date.setAttribute("data-date",prevStartDate + 1);
+                        prevStartDate++;
+                    }
+                    week.appendChild(date);
+                }
+                drawArea.appendChild(week);
+            }
+        }
+
+        function tagSelectOpen(e)
+        {
+            const tagSelectWrap = document.querySelector(".tagSelectWrap");
+            const tagList = document.querySelector(".tagList select");
+            checkDate = e.dataset.date;
+            tagList.innerHTML = "";
+            let tagKeys = Object.keys(tagObj);
+            tagKeys.forEach((item)=>{
+                const option = document.createElement("option");
+                option.value = item;
+                option.textContent = tagObj[item].text;
+                tagList.appendChild(option);
+            })
+            tagSelectWrap.style.top = `${e.getBoundingClientRect().y}px`;
+            tagSelectWrap.style.left = `${e.getBoundingClientRect().x}px`;
+            tagSelectWrap.classList.add("active");
+        }
+        function tagSelectClose()
+        {
+            const tagSelectWrap = document.querySelector(".tagSelectWrap");
+            tagSelectWrap.classList.remove("active");
+        }
+
+        function saveDateObj()
+        {
+            const tagList = document.querySelector(".tagList select");
+            const year = document.querySelector(".yearButton").textContent;
+            const month = document.querySelector(".monthButton").textContent;
+            if(dataObj[year])
+            {
+                if(dataObj[year][month])
+                {
+                    if(!dataObj[year][month][checkDate])
+                    {
+                        dataObj[year][month][checkDate] = [];
+                    }
+                }
+                else
+                {
+                    dataObj[year][month] = {};
+                    dataObj[year][month][checkDate] = [];
+                }
+            }
+            else
+            {
+                dataObj[year] = {};
+                dataObj[year][month] = {};
+                dataObj[year][month][checkDate] = [];
+            }
+            dataObj[year][month][checkDate].push(tagList.value);
+            saveData();
+            tagSelectClose();
+            const dateEle = document.querySelector(`[data-date="${checkDate}"]`);
+            const tag = document.createElement("div");
+            tag.classList.add("item");
+            tag.style.backgroundColor = colorCheck(tagList.value).color;
+            dateEle.appendChild(tag);
+        }
+
+        function moveMonth(e)
+        {
+            const year = e.getAttribute("data-year");
+            const month = e.getAttribute("data-month");
+            drawCalendar(year,month)
+        }
+        
+        //<div class="item" style="background-color: aqua;"></div>
+        
+        function loadData(year,month)
+        {
+            if(dataObj[year])
+            {
+                if(dataObj[year][month])
+                {
+                    return dataObj[year][month]
+                }
+            }
+            return false;
+        }
+
+        function colorCheck(tagId)
+        {
+            if(tagObj[tagId])
+            {
+                return tagObj[tagId]
+            }
+            return false;
+        }
+
+        function intercalation(year)
+        {
+            if(year % 4 === 0)
+            {
+                if(year % 100 === 0)
+                {
+                    if(year % 400 === 0)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+
+    </script>
 </body>
 </html>
