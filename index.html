@@ -6,107 +6,61 @@
     <title>Document</title>
     <script src="./jscolor.min.js"></script>
     <style>
-
-        :root {
-            font-size: 10px;
-        }
-        @media screen and (max-width: 768px) {
-            :root {
-                font-size: 5px;
-            }
-        }
-        
+        :root { font-size: 10px;}
+        @media screen and (max-width: 768px) { :root {     font-size: 5px; }}
         *{margin: 0; padding: 0;}
         html,body,.container{width: 100%; height: 100%;}
-        .optionWrap{
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 80px;
-            border: 1px solid #ddd;
-            box-sizing: border-box;
-        }
-        .optionWrap button{
-            flex: 1;
-            height: 100%;
-            border: 0;
-            border-right: 1px solid #ddd;
-            background: #fff;
-            cursor: pointer;
-            font-size: 2.5rem;
-        }
-        .optionWrap button:last-child{
-            border-right: 0;
-        }
-        .calendarWrap{
-            display: flex;
-            flex-direction: column;
-            height: calc(100% - 80px);
-        }
+        .optionWrap{ display: flex; align-items: center; justify-content: center; height: 80px; border: 1px solid #ddd; box-sizing: border-box;}
+        .optionWrap button{ flex: 1; height: 100%; border: 0; border-right: 1px solid #ddd; background: #fff; cursor: pointer; font-size: 2.5rem;}
+        .optionWrap button:last-child{ border-right: 0;}
+        .calendarWrap{ display: flex; flex-direction: column; height: calc(100% - 80px);}
         .calendarWrap .dayView,
-        .calendarWrap .week{
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 80px;
-            border: 1px solid #ddd;
-            border-top: 0;
-            box-sizing: border-box;
-        }
-        .calendarWrap .dayView{
-            flex: 1;
-        }
-        .calendarWrap .drawArea{
-            display: flex;
-            flex-direction: column;
-            flex: 14;
-        }
-        .calendarWrap .week{
-            flex: 1;
-        }
+        .calendarWrap .week{ display: flex; align-items: center; justify-content: center; height: 80px; border: 1px solid #ddd; border-top: 0; box-sizing: border-box;}
+        .calendarWrap .dayView{ flex: 1;}
+        .calendarWrap .drawArea{ display: flex; flex-direction: column; flex: 14;}
+        .calendarWrap .week{ flex: 1;}
         .calendarWrap .dayView > div,
-        .calendarWrap .week > div{
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex: 1;
-            height: 100%;
-            border: 0;
-            border-right: 1px solid #ddd;
-            background: #fff;
-            cursor: pointer;
-            font-size: 2.5rem;
-        }
-        .calendarWrap .week > div::after{
-            content: attr(data-date);
-            position: absolute;
-            top: 0.5rem;
-            left: 0.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 3rem;
-            height: 3rem;
-            text-align: center;
-        }
-        .calendarWrap .week > div{
-            flex-wrap: wrap;
-            justify-content: unset;
-            align-content: flex-start;
-            gap: 0.5rem;
-            padding: 4rem 1.7rem 0.5rem 1.7rem;
-            box-sizing: border-box;
-        }
-        .calendarWrap .week > div .item{
-            width: 1rem;
-            height: 1rem;
-            border-radius: 100%;
-            background-color: #000;
-            box-shadow: 0px 0px 4px -1px #000;
-        }
+        .calendarWrap .week > div{ position: relative; display: flex; align-items: center; justify-content: center; flex: 1; height: 100%; border: 0; border-right: 1px solid #ddd; background: #fff; cursor: pointer; font-size: 2.5rem;}
+        .calendarWrap .week > div::after{ content: attr(data-date); position: absolute; top: 0.5rem; left: 0.5rem; display: flex; align-items: center; justify-content: center; width: 3rem; height: 3rem; text-align: center;}
+        .calendarWrap .week > div{ flex-direction: column; justify-content: unset; padding-top: 4rem; box-sizing: border-box;}
+        .calendarWrap .week > div .item{ width: 100%; height: 100%; background-color: #000; border: 1px solid #f5f5f5; box-sizing: border-box; /* box-shadow: 0px 0px 4px -1px #000; */}
         .calendarWrap .week > div.nextDate{color: #ddd;}
         .calendarWrap .week > div.prevDate{color: #ddd;}
+        .statisticsOpen.active{ background: #000; color: #fff;}
+        .addTagPopup{ display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #fff; padding: 20px; box-sizing: border-box; z-index: 1;}
+        .addTagPopup.active{ display: block;}
+        .addTagPopup .titleWrap{ display: flex; align-items: center; justify-content: space-between;}
+        .addTagPopup .titleWrap h3{ font-size: 5rem; text-align: center;}
+        .addTagPopup .titleWrap button{ width: 10rem; height: 4rem; font-size: 2rem;}
+        .addTagPopup ul{ overflow: auto; height: calc(100% - 15rem); margin-top: 9rem;}
+        .addTagPopup ul li{ list-style: none; display: flex; align-items: center; justify-content: flex-start; margin-bottom: 3rem;}
+        .addTagPopup ul li div{ width: 6rem; height: 6rem; margin-right: 2rem; box-shadow: 0px 0px 3px -1px #000;}
+        .addTagPopup ul li h4{ font-size: 3rem;}
+        .addTagPopup .addTagInfoWrap{ display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.1);}
+        .addTagPopup .addTagInfoWrap.active{ display: flex;}
+        .addTagPopup .addTagInfoWrap .addTagInfo{  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; max-width: 500px; padding: 20px; background: #fff; box-sizing: border-box;}
+        .addTagPopup .addTagInfoWrap .addTagInfo .inputWrap{ display: flex;}
+        .addTagPopup .addTagInfoWrap .addTagInfo .inputWrap .textInput{ width: calc(100% - 110px); height: 30px; border: 1px solid #ddd;}
+        .addTagPopup .addTagInfoWrap .addTagInfo .buttonWrap{ display: flex; justify-content: center; margin-top: 10px;}
+        .addTagPopup .addTagInfoWrap .addTagInfo .buttonWrap button{ width: 100px; height: 30px; font-size: 2rem;}
+        .tagSelectWrap{ display: none; top: 50%; left: 50%; transform: translate(-50%, -50%); position: absolute; background: #fff; box-shadow: 0px 0px 25px -15px #000; padding: 15px; width: calc(100% - 40px); max-width: 500px; box-sizing: border-box;}
+        .tagSelectWrap.active{ display: block;}
+        .tagSelectWrap .tagSelect{ display: flex; flex-direction: column; align-items: center; justify-content: center;}
+        .tagSelectWrap .tagSelect .titleWrap{ display: flex; align-items: center; justify-content: space-between; width: 100%; margin-bottom: 10px;}
+        .tagSelectWrap .tagSelect .titleWrap h3{ width: 200px; font-size: 4rem;}
+        .tagSelectWrap .tagSelect .titleWrap button{ width: 80px; font-size: 1.5rem;}
+        .tagSelectWrap .tagSelect .tagList{ width: 100%;}
+        .tagSelectWrap .tagSelect .tagList select{ width: 100%; height: 30px; font-size: 3rem;}
+        .tagSelectWrap .tagSelect > button{ width: 100%; margin-top: 14px; font-size: 2rem; line-height: 5rem;}
+        .statisticsWrap{ display: none; width: 100%; height: calc(100% - 80px); background: #fff; position: absolute; top: 80px; left: 0; padding: 20px; box-sizing: border-box;}
+        .statisticsWrap.active{ display: block;}
+        .statisticsWrap h3{ font-size: 5rem;}
+        .statisticsWrap > div{ display: flex; align-items: center; justify-content: center;}
+        .statisticsWrap > div select{ width: 100%; height: 6rem; font-size: 3rem; margin-right: 1rem;}
+        .statisticsWrap ul{ width: calc(100% - 23.5rem); margin-top: 9rem;}
+        .statisticsWrap ul li{ position: relative; list-style: none; width: 100%; height: 6rem; margin-top: 7rem; margin-left: 2px; border-radius: 1rem; box-sizing: border-box; box-shadow: 0px 0px 5px 0px #0000001f;}
+        .statisticsWrap ul li h3{ position: absolute; left: 0; font-size: 3rem; top: -4.2rem;}
+        .statisticsWrap ul li span{ position: absolute; right: -21rem; font-size: 3rem; top: 0.8rem;}
     </style>
 </head>
 <body>
@@ -117,7 +71,7 @@
             <button class="prevButton" onclick="moveMonth(this)">이전</button>
             <button class="nextButton" onclick="moveMonth(this)">다음</button>
             <button onclick="addTagModalOpen()">태그목록</button>
-            <button>태그별<br />통계</button>
+            <button class="statisticsOpen" onclick="statisticsOpen()">태그별<br />통계</button>
         </div>
         <div class="calendarWrap">
             <div class="dayView">
@@ -129,98 +83,8 @@
                 <div>금</div>
                 <div>토</div>
             </div>
-            <div class="drawArea">
-                
-            </div>
+            <div class="drawArea"></div>
         </div>
-        <style>
-            .addTagPopup{
-                display: none;
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background-color: #fff;
-                padding: 1.5rem;
-                box-sizing: border-box;
-            }
-            .addTagPopup.active{
-                display: block;
-            }
-            .addTagPopup .titleWrap{
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-            }
-            .addTagPopup .titleWrap h3{
-                font-size: 4rem;
-                text-align: center;
-            }
-            .addTagPopup .titleWrap button{
-                width: 10rem;
-                height: 4rem;
-                font-size: 2rem;
-            }
-            .addTagPopup ul{}
-            .addTagPopup ul li{
-                list-style: none;
-                display: flex;
-                align-items: center;
-                justify-content: flex-start;
-                margin-bottom: 1rem;
-            }
-            .addTagPopup ul li div{
-                width: 4rem;
-                height: 4rem;
-                margin-right: 1rem;
-                box-shadow: 0px 0px 3px -1px #000;
-            }
-            .addTagPopup ul li h4{
-                font-size: 2rem;
-            }
-            .addTagPopup .addTagInfoWrap{
-                display: none;
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0,0,0,0.1);
-            }
-            .addTagPopup .addTagInfoWrap.active{
-                display: flex;
-            }
-            .addTagPopup .addTagInfoWrap .addTagInfo{
-                
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                width: 100%;
-                max-width: 500px;
-                padding: 20px;
-                background: #fff;
-                box-sizing: border-box;
-            }
-            .addTagPopup .addTagInfoWrap .addTagInfo .inputWrap{
-                display: flex;
-            }
-            .addTagPopup .addTagInfoWrap .addTagInfo .inputWrap .textInput{
-                width: calc(100% - 110px);
-                height: 30px; border: 1px solid #ddd;
-            }
-            .addTagPopup .addTagInfoWrap .addTagInfo .buttonWrap{
-                display: flex;
-                justify-content: center;
-                margin-top: 10px;
-            }
-            .addTagPopup .addTagInfoWrap .addTagInfo .buttonWrap button{
-                width: 100px;
-                height: 30px;
-                font-size: 2rem;
-            }
-        </style>
         <div class="addTagPopup">
             <div class="titleWrap">
                 <h3>태그 리스트</h3>
@@ -243,77 +107,6 @@
                 </div>
             </div>
         </div>
-        <style>
-            .tagSelectWrap{
-                display: none;
-                top: 148px;
-                left: 177px;
-                position: absolute;
-                background: #fff;
-                box-shadow: 0px 0px 25px -15px #000;
-                padding: 15px;
-                width: calc((100% - 14px) / 7);
-                box-sizing: border-box;
-            }
-            .tagSelectWrap.active{
-                display: block;
-            }
-            .tagSelectWrap::before{
-                content: "";
-                position: absolute;
-                top: -10px;
-                left: 50%;
-                transform: translateX(-50%);
-                border-left: 10px solid transparent;
-                border-right: 10px solid transparent;
-                border-bottom: 10px solid #fff;
-            }
-            .tagSelectWrap::after{
-                content: "";
-                position: absolute;
-                top: -11px;
-                left: 50%;
-                transform: translateX(-50%);
-                border-left: 11px solid transparent;
-                border-right: 11px solid transparent;
-                border-bottom: 11px solid #000;
-            }
-            .tagSelectWrap .tagSelect{
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-            }
-            .tagSelectWrap .tagSelect .titleWrap{
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                flex-direction: column;
-                width: 100%;
-                margin-bottom: 10px;
-            }
-            .tagSelectWrap .tagSelect .titleWrap h3{
-                width: 50px;
-                font-size: 2rem;
-            }
-            .tagSelectWrap .tagSelect .titleWrap button{
-                width: 50px;
-                font-size: 1.5rem;
-            }
-            .tagSelectWrap .tagSelect .tagList{
-                width: 100%;
-            }
-            .tagSelectWrap .tagSelect .tagList select{
-                width: 100%;
-                height: 30px;
-                font-size: 1.5rem;
-            }
-            .tagSelectWrap .tagSelect > button{
-                width: 50px;
-                font-size: 1.5rem;
-            }
-
-        </style>
         <div class="tagSelectWrap">
             <div class="tagSelect">
                 <div class="titleWrap">
@@ -326,11 +119,54 @@
                 <button onclick="saveDateObj()">저장</button>
             </div>
         </div>
+        <div class="statisticsWrap">
+            <h3><span class="monthText"></span>월 통계</h3>
+            <div>
+                <select id="statisticsYear" onchange="statisticsDateChange();">
+                    <option value="">년</option>
+                </select>
+                <select id="statisticsMonth" onchange="statisticsDateChange();">
+                    <option value="1">1월</option>
+                    <option value="2">2월</option>
+                    <option value="3">3월</option>
+                    <option value="4">4월</option>
+                    <option value="5">5월</option>
+                    <option value="6">6월</option>
+                    <option value="7">7월</option>
+                    <option value="8">8월</option>
+                    <option value="9">9월</option>
+                    <option value="10">10월</option>
+                    <option value="11">11월</option>
+                    <option value="12">12월</option>
+                </select>
+            </div>
+            <div style="justify-content: flex-start; height: calc(100% - 10rem); overflow: auto; align-items: flex-start;">
+                <ul></ul>
+            </div>
+        </div>
     </div>
     <script>
         let tagObj = {};
         let dataObj = {};
         let tagId = 0;
+        let checkDate = null;
+        window.onload = function()
+        {
+            if(localStorage.getItem('tagObj'))
+            {
+                tagObj = JSON.parse(localStorage.getItem('tagObj'));
+            }
+            if(localStorage.getItem('dataObj'))
+            {
+                dataObj = JSON.parse(localStorage.getItem('dataObj'));
+            }
+            if(localStorage.getItem('tagId'))
+            {
+                tagId = parseInt(localStorage.getItem('tagId'));
+            }
+            drawCalendar();
+        }
+        
         function addTagModalOpen()
         {
             const addTagPopup = document.querySelector(".addTagPopup");
@@ -378,26 +214,7 @@
             localStorage.setItem('dataObj', JSON.stringify(dataObj));
             localStorage.setItem('tagId', tagId);
         }
-    </script>
-    <script>
-        let checkDate = null;
-        window.onload = function()
-        {
-            if(localStorage.getItem('tagObj'))
-            {
-                tagObj = JSON.parse(localStorage.getItem('tagObj'));
-            }
-            if(localStorage.getItem('dataObj'))
-            {
-                dataObj = JSON.parse(localStorage.getItem('dataObj'));
-            }
-            if(localStorage.getItem('tagId'))
-            {
-                tagId = parseInt(localStorage.getItem('tagId'));
-            }
-            drawCalendar();
-        }
-
+        
         function drawCalendar(year,month)
         {
             const today = year&&month?new Date(year,month-1,1):new Date();
@@ -494,10 +311,9 @@
                 option.textContent = tagObj[item].text;
                 tagList.appendChild(option);
             })
-            tagSelectWrap.style.top = `${e.getBoundingClientRect().y}px`;
-            tagSelectWrap.style.left = `${e.getBoundingClientRect().x}px`;
             tagSelectWrap.classList.add("active");
         }
+
         function tagSelectClose()
         {
             const tagSelectWrap = document.querySelector(".tagSelectWrap");
@@ -544,10 +360,9 @@
         {
             const year = e.getAttribute("data-year");
             const month = e.getAttribute("data-month");
-            drawCalendar(year,month)
+            drawCalendar(year,month);
+            statisticsSet();
         }
-        
-        //<div class="item" style="background-color: aqua;"></div>
         
         function loadData(year,month)
         {
@@ -596,7 +411,85 @@
             }
         }
 
+        function statisticsOpen()
+        {
+            const statisticsOpen = document.querySelector(".statisticsOpen");
+            const statisticsWrap = document.querySelector(".statisticsWrap");
+            statisticsOpen.classList.toggle("active");
+            statisticsWrap.classList.toggle("active");
+            statisticsSet();
+        }
 
+        function statisticsDateChange()
+        {
+            const statisticsYear = document.querySelector("#statisticsYear");
+            const statisticsMonth = document.querySelector("#statisticsMonth");
+
+            drawCalendar(statisticsYear.value,statisticsMonth.value);
+            statisticsSet();
+        }
+
+        function statisticsSet()
+        {
+            const statisticsWrapUl = document.querySelector(".statisticsWrap ul");
+            const yearList = dataObj?Object.keys(dataObj):[];
+            const statisticsYear = document.querySelector("#statisticsYear");
+            const statisticsMonth = document.querySelector("#statisticsMonth");
+            const yearButton = document.querySelector(".yearButton");
+            const monthButton = document.querySelector(".monthButton");
+            statisticsYear.innerHTML = "";
+            yearList.forEach((item)=>{
+                const option = document.createElement("option");
+                option.value = item;
+                option.textContent = item;
+                statisticsYear.appendChild(option);
+            })
+            statisticsYear.value = yearButton.textContent;
+            statisticsMonth.value = monthButton.textContent;
+
+            let statisticsDataList = [];
+            if(dataObj)
+            {
+                if(dataObj[statisticsYear.value])
+                {
+                    if(dataObj[statisticsYear.value][statisticsMonth.value])
+                    {
+                        const dateKeys = Object.keys(dataObj[statisticsYear.value][statisticsMonth.value]);
+                        for(let i = 0; i < dateKeys.length; i++)
+                        {
+                            statisticsDataList.push(...dataObj[statisticsYear.value][statisticsMonth.value][dateKeys[i]])
+                        }
+                    }
+                }
+            }
+            let result = {};
+            statisticsDataList.forEach((x) => { 
+                result[x] = (result[x] || 0)+1; 
+            });
+            let resultList = [];
+            let totalValue = 0;
+            Object.keys(result).forEach((key)=>{
+                let obj = {};
+                obj.key = key;
+                obj.value = result[key];
+                totalValue += result[key];
+                resultList.push(obj);
+            })
+            const finalList = resultList.sort((a,b)=>{return b.value - a.value});
+            statisticsWrapUl.innerHTML = "";
+            finalList.forEach((item)=>{
+                const li = document.createElement("li");
+                li.style.width = Math.round((item.value / totalValue) * 100)+'%';
+                li.style.background = tagObj[item.key].color;
+                let html = `
+                    <h3>${tagObj[item.key].text}</h3>
+                    <span>${item.value}회 (${Math.round((item.value / totalValue) * 100)}%)</span>
+                `;
+                li.innerHTML = html;
+                statisticsWrapUl.appendChild(li);
+                
+            })
+        }
     </script>
 </body>
 </html>
