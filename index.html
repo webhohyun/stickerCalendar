@@ -10,35 +10,25 @@
         @media screen and (max-width: 768px) { :root {     font-size: 5px; }}
         *{margin: 0; padding: 0;}
         html,body,.container{width: 100%; height: 100%;}
-        .optionWrap{ display: flex; align-items: center; justify-content: center; height: 80px; border: 1px solid #ddd; box-sizing: border-box;}
+        .optionWrap{ position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; height: 80px; border: 1px solid #ddd; box-sizing: border-box;}
         .optionWrap button{ flex: 1; height: 100%; border: 0; border-right: 1px solid #ddd; background: #fff; cursor: pointer; font-size: 2.5rem;}
         .optionWrap button:last-child{ border-right: 0;}
         .calendarWrap{ display: flex; flex-direction: column; height: calc(100% - 80px);}
         .calendarWrap .dayView,
         .calendarWrap .week{ display: flex; align-items: center; justify-content: center; height: 80px; border: 1px solid #ddd; border-top: 0; box-sizing: border-box;}
-        .calendarWrap .dayView{ flex: 1;}
-        .calendarWrap .drawArea{ display: flex; flex-direction: column; flex: 14;}
+        .calendarWrap .dayView{ position: relative; z-index: 1; flex: 1;}
+        .calendarWrap .drawArea{ display: flex; flex-direction: column; flex: 14; position: relative; z-index: 0;}
         .calendarWrap .week{ flex: 1;}
         .calendarWrap .dayView > div,
         .calendarWrap .week > div{ position: relative; display: flex; align-items: center; justify-content: center; flex: 1; height: 100%; border: 0; border-right: 1px solid #ddd; background: #fff; cursor: pointer; font-size: 2.5rem; flex-direction: column; justify-content: unset; padding-top: 4rem; box-sizing: border-box;}
         .calendarWrap .week > div::after{ content: attr(data-date); position: absolute; top: 0.5rem; left: 0.5rem; display: flex; align-items: center; justify-content: center; width: 3rem; height: 3rem; text-align: center;}
-        .calendarWrap .week > div.today{
-            box-shadow: 0px 0px 0px 2px #354eff inset;
-        }
-        .calendarWrap .week > div.today::after{
-            font-weight: bold;
-        }
-        .calendarWrap .week > div.today::before{
-            content: "📅";
-            position: absolute;
-            top: 0;
-            right: 0;
-            height: 4rem;
-            background: #354eff;
-        }
-        .calendarWrap .week > div .item{ width: 100%; height: 100%; background-color: #000; border: 1px solid #f5f5f5; box-sizing: border-box; /* box-shadow: 0px 0px 4px -1px #000; */}
+        .calendarWrap .week > div.today{ box-shadow: 0px 0px 0px 2px #354eff inset;}
+        .calendarWrap .week > div.today::after{ font-weight: bold;}
+        .calendarWrap .week > div.today::before{ content: "today"; font-size: 2rem; line-height: 1; display: flex; align-items: center; padding: 0 4px; color: #fff; position: absolute; top: 0; right: 0; height: 4rem; background: #354eff;}
+        .calendarWrap .week > div .item{ width: calc(100% - 4px); height: calc(100% - 2px); background-color: #000; border: 1px solid #f5f5f5; box-sizing: border-box; /* box-shadow: 0px 0px 4px -1px #000; */}
         .calendarWrap .week > div.nextDate{color: #ddd;}
         .calendarWrap .week > div.prevDate{color: #ddd;}
+        .calendarWrap .week1 > div{ border-top: 1px solid #ddd;}
         .statisticsOpen.active{ background: #000; color: #fff;}
         .addTagPopup{ display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #fff; padding: 20px; box-sizing: border-box; z-index: 1;}
         .addTagPopup.active{ display: block;}
@@ -520,6 +510,48 @@
                 
             })
         }
+
+        const swipeCalendarWrap = document.querySelector(".calendarWrap");
+        let startPoint = 0;
+        let endPoint = 0;
+        swipeCalendarWrap.addEventListener("touchstart", (e) => 
+        {
+            startPoint = e.touches[0].pageY;
+        });
+        swipeCalendarWrap.addEventListener("touchmove", (e) => 
+        {
+            e.preventDefault();
+            let moveY = -(startPoint - (e.changedTouches[0].pageY));
+            const drawArea = document.querySelector(".drawArea");
+            if(moveY>=0 && moveY>50)
+            {
+                moveY = 50;
+            }
+            else if(moveY<0 && moveY<-50)
+            {
+                moveY = -50;
+            }
+            drawArea.style.transform = `translateY(${moveY}px)`;
+        });
+        swipeCalendarWrap.addEventListener("touchend", (e) => 
+        {
+            const nextButton = document.querySelector(".nextButton");
+            const prevButton = document.querySelector(".prevButton");
+            endPoint = e.changedTouches[0].pageY;
+            if(Math.abs(endPoint - startPoint)>100)
+            {
+                if (startPoint < endPoint) 
+                {
+                    prevButton.click();
+                } 
+                else if (startPoint > endPoint) 
+                {
+                    nextButton.click();
+                }
+            }
+            const drawArea = document.querySelector(".drawArea");
+            drawArea.style.transform = `translateY(${0}px)`;
+        });
     </script>
 </body>
 </html>
